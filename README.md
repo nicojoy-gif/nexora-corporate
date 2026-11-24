@@ -1,36 +1,32 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Nexora Corporate
 
-## Getting Started
+Corporate website for a fictional African business consulting and technology firm, built with Next.js (App Router, Cache Components) and Sanity CMS. The Studio is embedded at `/studio`.
 
-First, run the development server:
+## Run
 
 ```bash
+npm install --legacy-peer-deps
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+`.env.local` needs `NEXT_PUBLIC_SANITY_PROJECT_ID` and `NEXT_PUBLIC_SANITY_DATASET`. The site reads only the public dataset. It does not use an API token.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Content model (Studio)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Document | Purpose |
+| --- | --- |
+| Homepage | Hero, introduction, statistics (up to 4) and enquiry CTA |
+| About Page (singleton) | Introduction, story, image, mission, vision, values, leadership |
+| Service | Title, slug, icon, summary, image, inclusions, details, featured flag, order |
+| News Article | Title, slug, publication date, category, image, excerpt, Portable Text body |
+| Site Settings (singleton) | Company name, tagline, email, phone, address, office hours, social links |
 
-## Learn More
+Pages: `/`, `/about`, `/services`, `/services/[slug]`, `/news`, `/news/[slug]`, `/contact`.
 
-To learn more about Next.js, take a look at the following resources:
+## Caching
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Sanity queries run inside `use cache` with `cacheLife('minutes')`, so pages are prerendered. Changes published in Studio appear within about a minute, with no webhook needed. When a new service or article is published, its page is rendered on its first visit. Images are resized by the Sanity CDN through a custom `next/image` loader.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Contact form: demonstration behaviour
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The business enquiry form validates on the client and again on the server through a Server Action. **No email service is connected, so enquiries are not sent or stored.** The form says this before and after submission. For production, connect a transactional email provider or CRM in `app/(site)/contact/actions.ts`.
